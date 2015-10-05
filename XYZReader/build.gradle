@@ -33,4 +33,5 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.5.0'
     //compile 'com.squareup.okhttp:okhttp:1.1.0'
     //compile files('libs/volley.jar')
+    compile 'com.android.support:design:23.0.1'
 }

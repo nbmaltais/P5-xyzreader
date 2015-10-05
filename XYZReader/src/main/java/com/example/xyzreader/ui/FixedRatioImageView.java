@@ -1,28 +1,40 @@
 package com.example.xyzreader.ui;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
+import com.example.xyzreader.R;
 
-public class DynamicHeightNetworkImageView extends ImageView {
+
+public class FixedRatioImageView extends ImageView {
     private float mAspectRatio = 1.5f;
 
-    public DynamicHeightNetworkImageView(Context context) {
+    public FixedRatioImageView(Context context) {
         super(context);
     }
 
-    public DynamicHeightNetworkImageView(Context context, AttributeSet attrs) {
+    public FixedRatioImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public DynamicHeightNetworkImageView(Context context, AttributeSet attrs, int defStyle) {
+    public FixedRatioImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
     public void setAspectRatio(float aspectRatio) {
         mAspectRatio = aspectRatio;
         requestLayout();
+    }
+
+    private void init(Context context, AttributeSet attrs, int defStyle) {
+        final TypedArray a = context.obtainStyledAttributes(attrs,
+                R.styleable.DrawInsetsFrameLayout, defStyle, 0);
+        assert a != null;
+
+        mAspectRatio = a.getFloat(R.styleable.FixedRatioImageView_ratio,mAspectRatio);
+        a.recycle();
     }
 
     @Override

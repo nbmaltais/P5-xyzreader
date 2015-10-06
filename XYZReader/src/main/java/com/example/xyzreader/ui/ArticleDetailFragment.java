@@ -48,22 +48,16 @@ public class ArticleDetailFragment extends Fragment implements
     private static final String TAG = "ArticleDetailFragment";
 
     public static final String ARG_ITEM_ID = "item_id";
-    private static final float PARALLAX_FACTOR = 1.25f;
 
     private Cursor mCursor;
     private long mItemId;
     private View mRootView;
     private int mMutedColor = 0xFF333333;
     private NestedScrollView mScrollView;
-    //private DrawInsetsFrameLayout mDrawInsetsFrameLayout;
     private ColorDrawable mStatusBarColorDrawable;
 
-    private int mTopInset;
-    //private View mPhotoContainerView;
     private ImageView mPhotoView;
-    private int mScrollY;
-    private boolean mIsCard = false;
-    private int mStatusBarFullOpacityBottom;
+
     private Toolbar mToolbar;
     CollapsingToolbarLayout mCollapsingToolbarLayout;
 
@@ -90,10 +84,8 @@ public class ArticleDetailFragment extends Fragment implements
             mItemId = getArguments().getLong(ARG_ITEM_ID);
         }
 
-        mIsCard = getResources().getBoolean(R.bool.detail_is_card);
+        //mIsCard = getResources().getBoolean(R.bool.detail_is_card);
 
-        mStatusBarFullOpacityBottom = getResources().getDimensionPixelSize(
-                R.dimen.detail_card_top_margin);
         setHasOptionsMenu(true);
     }
 
@@ -143,12 +135,13 @@ public class ArticleDetailFragment extends Fragment implements
 
         //mToolbar.setNavigationIcon(R.drawable.ic_arrow_back);
         ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-
-        supportActionBar.setDisplayHomeAsUpEnabled(true);
-        supportActionBar.setDisplayShowTitleEnabled(false);
+        if(supportActionBar!=null) {
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
+            supportActionBar.setDisplayShowTitleEnabled(false);
+        }
 
         bindViews();
-        updateStatusBar();
+
         return mRootView;
     }
 
@@ -160,27 +153,7 @@ public class ArticleDetailFragment extends Fragment implements
         toolbar.setPadding(0,padding,0,0);
     }
 
-    private void updateStatusBar() {
-        /*int color = 0;
-        if (mPhotoView != null && mTopInset != 0 && mScrollY > 0) {
-            float f = progress(mScrollY,
-                    mStatusBarFullOpacityBottom - mTopInset * 3,
-                    mStatusBarFullOpacityBottom - mTopInset);
-            color = Color.argb((int) (255 * f),
-                    (int) (Color.red(mMutedColor) * 0.9),
-                    (int) (Color.green(mMutedColor) * 0.9),
-                    (int) (Color.blue(mMutedColor) * 0.9));
-        }
-        mStatusBarColorDrawable.setColor(color);*/
 
-        // TODO: only in > Lollipop
-        //int statusBarHeight = Utils.getStatusBarHeight(getActivity());
-        //mToolbar.setPadding(0, statusBarHeight, 0, 0);
-        //ViewGroup.LayoutParams layoutParams = mToolbar.getLayoutParams();
-
-
-        //mDrawInsetsFrameLayout.setInsetBackground(mStatusBarColorDrawable);
-    }
 
     static float progress(float v, float min, float max) {
         return constrain((v - min) / (max - min), 0, 1);

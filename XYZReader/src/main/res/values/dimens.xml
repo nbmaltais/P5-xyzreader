@@ -1,4 +1,7 @@
 <resources>
+    <dimen name="keyline_1">16dp</dimen>
+    <dimen name="keyline_2">72dp</dimen>
+
     <!-- detail -->
     <dimen name="detail_title_text_size">32sp</dimen>
     <dimen name="detail_body_text_size">22sp</dimen>
@@ -10,5 +13,7 @@
     <dimen name="toolbar_elevation">4dp</dimen>
     <dimen name="toolbar_start_elevation">2dp</dimen>
     <dimen name="detail_image_vide_max_height">250dp</dimen>
+    <dimen name="appbar_elevation">4dp</dimen>
+
 
 </resources>

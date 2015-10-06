@@ -120,6 +120,8 @@ public class ArticleDetailFragment extends Fragment implements
         mToolbar = (Toolbar) mRootView.findViewById(R.id.toolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
 
+        adjustToolbarPadding(mToolbar);
+
         mCollapsingToolbarLayout = (CollapsingToolbarLayout) mRootView.findViewById(R.id.collapsing_toolbar);
 
 
@@ -148,6 +150,14 @@ public class ArticleDetailFragment extends Fragment implements
         bindViews();
         updateStatusBar();
         return mRootView;
+    }
+
+    private void adjustToolbarPadding(Toolbar toolbar) {
+        int padding =  Utils.getStatusBarHeight(getActivity());
+        ViewGroup.LayoutParams layoutParams = toolbar.getLayoutParams();
+        layoutParams.height += padding;
+        toolbar.setLayoutParams(layoutParams);
+        toolbar.setPadding(0,padding,0,0);
     }
 
     private void updateStatusBar() {
@@ -212,7 +222,8 @@ public class ArticleDetailFragment extends Fragment implements
                             + mCursor.getString(ArticleLoader.Query.AUTHOR)
                             + "</font>");
 
-            mCollapsingToolbarLayout.setTitle(title);
+            if(mCollapsingToolbarLayout!=null)
+                mCollapsingToolbarLayout.setTitle(title);
 
 
             titleView.setText(title);

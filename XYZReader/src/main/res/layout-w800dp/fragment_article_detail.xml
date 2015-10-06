@@ -1,0 +1,52 @@
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    >
+
+    <ImageView
+        android:id="@+id/photo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:maxHeight="@dimen/detail_image_vide_max_height"
+        android:scaleType="fitStart"
+        app:layout_collapseMode="parallax"
+        tools:src="@drawable/test_image"
+
+        />
+
+    <android.support.v4.widget.NestedScrollView
+        android:paddingTop="@dimen/detail_content_paddingTop"
+        android:id="@+id/scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        >
+
+
+        <include layout="@layout/include_detail_content"/>
+
+    </android.support.v4.widget.NestedScrollView>
+
+
+        <android.support.v7.widget.Toolbar
+            android:id="@id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:elevation="@dimen/toolbar_start_elevation"
+            android:minHeight="?attr/actionBarSize"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+
+            />
+
+
+
+
+
+
+</android.support.design.widget.CoordinatorLayout>

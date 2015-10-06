@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.xyzreader.ui;
+package com.example.xyzreader.widget;
 
 import android.annotation.TargetApi;
 import android.content.Context;

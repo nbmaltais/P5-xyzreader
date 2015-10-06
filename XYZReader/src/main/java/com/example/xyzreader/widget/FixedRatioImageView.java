@@ -1,4 +1,4 @@
-package com.example.xyzreader.ui;
+package com.example.xyzreader.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -33,7 +33,7 @@ public class FixedRatioImageView extends ImageView {
                 R.styleable.DrawInsetsFrameLayout, defStyle, 0);
         assert a != null;
 
-        mAspectRatio = a.getFloat(R.styleable.FixedRatioImageView_ratio,mAspectRatio);
+        mAspectRatio = a.getFloat(R.styleable.FixedRatioImageView_ratio, mAspectRatio);
         a.recycle();
     }
 

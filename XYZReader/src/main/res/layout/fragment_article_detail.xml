@@ -26,7 +26,7 @@
 
             >
 
-            <com.example.xyzreader.ui.FixedRatioImageView
+            <com.example.xyzreader.widget.FixedRatioImageView
                 android:id="@+id/photo"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"

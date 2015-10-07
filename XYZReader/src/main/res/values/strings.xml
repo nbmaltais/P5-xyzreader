@@ -9,5 +9,6 @@
 
     <string name="up">Up</string>
     <string name="article_subtitle">"%1$s by %2$s"</string>
+    <string name="transition_main_image">MainImage</string>
 
 </resources>

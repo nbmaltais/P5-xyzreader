@@ -14,6 +14,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,12 +25,15 @@ import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.R;
 
+import java.util.HashMap;
+
 /**
  * An activity representing a single Article detail screen, letting you swipe between articles.
  */
 public class ArticleDetailActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final String TAG = ArticleDetailActivity.class.getSimpleName();
     private Cursor mCursor;
     private long mStartId;
 
@@ -40,6 +44,7 @@ public class ArticleDetailActivity extends AppCompatActivity
     private ViewPager mPager;
     private MyPagerAdapter mPagerAdapter;
 
+    private HashMap<Integer,ArticleDetailFragment> mPagerFragments = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +63,7 @@ public class ArticleDetailActivity extends AppCompatActivity
         mPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mPagerAdapter);
+        mPager.setPageTransformer(true, new Transformer());
         // TODO: set in resource
         /*mPager.setPageMargin((int) TypedValue
                 .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics()));
@@ -123,26 +129,59 @@ public class ArticleDetailActivity extends AppCompatActivity
     }
 
 
+    class Transformer implements ViewPager.PageTransformer {
+
+        @Override
+        public void transformPage(View page, float position) {
+
+
+            ArticleDetailFragment f = findFragment(page);
+            if(f==null)
+            {
+                Log.w(TAG,"transformPage fragment is null");
+                return;
+            }
+
+            f.transformPage(page,position);
+
+        }
+    }
+
+    /**
+     * Return the fragment associated with this view. Called from the view pager page transfromer
+     * @param view
+     * @return
+     */
+    private ArticleDetailFragment findFragment(View view) {
+        for(ArticleDetailFragment f : mPagerFragments.values())
+        {
+            if(f.getView()==view)
+                return f;
+        }
+
+        return null;
+    }
 
     private class MyPagerAdapter extends FragmentStatePagerAdapter {
         public MyPagerAdapter(android.support.v4.app.FragmentManager fm) {
             super(fm);
         }
-        /*public MyPagerAdapter(SupportFragmentManager fm) {
-            super(fm);
-        }*/
 
-        @Override
-        public void setPrimaryItem(ViewGroup container, int position, Object object) {
-            super.setPrimaryItem(container, position, object);
-            ArticleDetailFragment fragment = (ArticleDetailFragment) object;
-
-        }
 
         @Override
         public Fragment getItem(int position) {
             mCursor.moveToPosition(position);
-            return ArticleDetailFragment.newInstance(mCursor.getLong(ArticleLoader.Query._ID));
+            ArticleDetailFragment f = ArticleDetailFragment.newInstance(mCursor.getLong(ArticleLoader.Query._ID));
+            // Keep a reference to the fragment
+            mPagerFragments.put(position,f);
+
+            return f;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            super.destroyItem(container, position, object);
+            mPagerFragments.remove(position);
         }
 
         @Override

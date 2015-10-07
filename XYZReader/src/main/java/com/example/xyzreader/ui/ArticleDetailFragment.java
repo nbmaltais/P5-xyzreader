@@ -150,7 +150,7 @@ public class ArticleDetailFragment extends Fragment implements
         ViewGroup.LayoutParams layoutParams = toolbar.getLayoutParams();
         layoutParams.height += padding;
         toolbar.setLayoutParams(layoutParams);
-        toolbar.setPadding(0,padding,0,0);
+        toolbar.setPadding(0, padding, 0, 0);
     }
 
 
@@ -266,4 +266,30 @@ public class ArticleDetailFragment extends Fragment implements
     }
 
 
+    public void transformPage(View page, float position) {
+        int pageWidth = page.getWidth();
+
+        if(mToolbar!=null)
+        {
+            if(position < -1 || position > 1)
+            {
+                mToolbar.setTranslationX(0);
+            }
+            else {
+                // Counteract the default slide transition
+                mToolbar.setTranslationX(pageWidth * -position);
+            }
+        }
+        // Add a parralax effect when swiping between fragment
+        if(mPhotoView!=null)
+        {
+            if(position < -1 || position > 1) {
+                mPhotoView.setTranslationX(0);
+            }
+            else
+            {
+                mPhotoView.setTranslationX(pageWidth * -position / 2);
+            }
+        }
+    }
 }

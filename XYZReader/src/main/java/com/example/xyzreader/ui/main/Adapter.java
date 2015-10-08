@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.xyzreader.R;
+import com.example.xyzreader.Utils;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.ui.detail.ArticleDetailActivity;
@@ -75,7 +76,7 @@ class Adapter extends RecyclerView.Adapter<ViewHolder> {
 
         holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
 
-        ViewCompat.setTransitionName(holder.thumbnailView, "Image" + Long.toString(getItemId(position)) );
+        ViewCompat.setTransitionName(holder.thumbnailView, Utils.makeImageTransitionName(getItemId(position)));//
 
         // TODO: add place holder
         Picasso.with(ctx).load(imageUrl).into(holder.thumbnailView);

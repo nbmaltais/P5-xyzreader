@@ -4,16 +4,11 @@ package com.example.xyzreader.ui.detail;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.app.ShareCompat;
-import android.support.v4.content.Loader;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -42,19 +37,14 @@ import com.squareup.picasso.Picasso;
  * either contained in a {@link ArticleListActivity} in two-pane mode (on
  * tablets) or a {@link ArticleDetailActivity} on handsets.
  */
-public class ArticleDetailFragment extends Fragment implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+public class ArticleDetailFragment extends Fragment {
     private static final String TAG = "ArticleDetailFragment";
 
     //public static final String ARG_ITEM_ID = "item_id";
     private static final String KEY_DATA = "data";
 
-    private Cursor mCursor;
-    private long mItemId;
     private View mRootView;
-    private int mMutedColor = 0xFF333333;
-    //private NestedScrollView mScrollView;
-    //private ColorDrawable mStatusBarColorDrawable;
+
 
     private ImageView mPhotoView;
 
@@ -62,6 +52,14 @@ public class ArticleDetailFragment extends Fragment implements
     CollapsingToolbarLayout mCollapsingToolbarLayout;
 
     private DetailData mData;
+    private TextView mTitleView;
+    private TextView mBylineView;
+    private TextView mBodyView;
+    private View mFab;
+    private View mMetaBar;
+    private boolean mImageLoaded = false;
+    private boolean mResumeOnImageLoad = false;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -69,13 +67,6 @@ public class ArticleDetailFragment extends Fragment implements
     public ArticleDetailFragment() {
     }
 
-    /*public static ArticleDetailFragment newInstance(long itemId) {
-        Bundle arguments = new Bundle();
-        arguments.putLong(ARG_ITEM_ID, itemId);
-        ArticleDetailFragment fragment = new ArticleDetailFragment();
-        fragment.setArguments(arguments);
-        return fragment;
-    }*/
 
     public static ArticleDetailFragment fromCursor(Cursor cursor) {
         DetailData data = new DetailData();
@@ -83,9 +74,10 @@ public class ArticleDetailFragment extends Fragment implements
         data.title = cursor.getString(ArticleLoader.Query.TITLE);
 
         data.date = cursor.getLong(ArticleLoader.Query.PUBLISHED_DATE);
-        data.author =  cursor.getString(ArticleLoader.Query.AUTHOR);
+        data.author = cursor.getString(ArticleLoader.Query.AUTHOR);
         data.body = cursor.getString(ArticleLoader.Query.BODY);
         data.imageUrl = cursor.getString(ArticleLoader.Query.PHOTO_URL);
+        //data.imageUrl = cursor.getString(ArticleLoader.Query.THUMB_URL);
         data.id = cursor.getLong(ArticleLoader.Query._ID);
 
         Bundle args = new Bundle();
@@ -104,8 +96,7 @@ public class ArticleDetailFragment extends Fragment implements
         /*if (getArguments().containsKey(ARG_ITEM_ID)) {
             mItemId = getArguments().getLong(ARG_ITEM_ID);
         }*/
-        if(getArguments().containsKey(KEY_DATA))
-        {
+        if (getArguments().containsKey(KEY_DATA)) {
             mData = getArguments().getParcelable(KEY_DATA);
         }
 
@@ -122,36 +113,31 @@ public class ArticleDetailFragment extends Fragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // In support library r8, calling initLoader for a fragment in a FragmentPagerAdapter in
-        // the fragment's onCreate may cause the same LoaderManager to be dealt to multiple
-        // fragments because their mIndex is -1 (haven't been added to the activity yet). Thus,
-        // we do this in onActivityCreated.
-        getLoaderManager().initLoader(0, null, this);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
 
-        Log.d(TAG,"onCreateView itemid = " + mItemId);
+        Log.d(TAG, "onCreateView itemid = " + mData.id);
 
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
 
         mToolbar = (Toolbar) mRootView.findViewById(R.id.toolbar);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
 
         adjustToolbarPadding(mToolbar);
 
         mCollapsingToolbarLayout = (CollapsingToolbarLayout) mRootView.findViewById(R.id.collapsing_toolbar);
-
-
-        //mScrollView = (NestedScrollView) mRootView.findViewById(R.id.scrollview);
-
         mPhotoView = (ImageView) mRootView.findViewById(R.id.photo);
+        mTitleView = (TextView) mRootView.findViewById(R.id.article_title);
+        mBylineView = (TextView) mRootView.findViewById(R.id.article_byline);
+        mBodyView = (TextView) mRootView.findViewById(R.id.article_body);
+        mMetaBar = mRootView.findViewById(R.id.meta_bar);
+        mFab = mRootView.findViewById(R.id.share_fab);
 
-        //mStatusBarColorDrawable = new ColorDrawable(0);
-
-        mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
+        mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
@@ -163,31 +149,37 @@ public class ArticleDetailFragment extends Fragment implements
 
         //mToolbar.setNavigationIcon(R.drawable.ic_arrow_back);
         ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if(supportActionBar!=null) {
+        if (supportActionBar != null) {
             supportActionBar.setDisplayHomeAsUpEnabled(true);
             supportActionBar.setDisplayShowTitleEnabled(false);
         }
 
-        ViewCompat.setTransitionName(mPhotoView, "Image" + Long.toString(mItemId));
+        ViewCompat.setTransitionName(mPhotoView, Utils.makeImageTransitionName(mData.id));
         bindViews();
 
-       /*mRootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+        mRootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
+                Log.d(TAG, "mRootView.getViewTreeObserver().onPreDraw, itemId = " + mData.id);
                 mRootView.getViewTreeObserver().removeOnPreDrawListener(this);
                 ArticleDetailActivity a = getActivityCast();
-                if(a!=null) {
-                    a.resumeContentTransitionAnimation();
+                if (a != null && mImageLoaded) {
+                    a.resumeContentTransitionAnimation(mData.id);
+                }
+                else
+                {
+                    mResumeOnImageLoad=true;
                 }
                 return true;
             }
-        });*/
+        });
 
+        Log.d(TAG, "onCreateView exit");
         return mRootView;
     }
 
     private void adjustToolbarPadding(Toolbar toolbar) {
-        int padding =  Utils.getStatusBarHeight(getActivity());
+        int padding = Utils.getStatusBarHeight(getActivity());
         ViewGroup.LayoutParams layoutParams = toolbar.getLayoutParams();
         layoutParams.height += padding;
         toolbar.setLayoutParams(layoutParams);
@@ -195,58 +187,45 @@ public class ArticleDetailFragment extends Fragment implements
     }
 
 
-
-    static float constrain(float val, float min, float max) {
-        if (val < min) {
-            return min;
-        } else if (val > max) {
-            return max;
-        } else {
-            return val;
-        }
-    }
-
     private void bindViews() {
         if (mRootView == null) {
             return;
         }
 
-        TextView titleView = (TextView) mRootView.findViewById(R.id.article_title);
-        TextView bylineView = (TextView) mRootView.findViewById(R.id.article_byline);
-        bylineView.setMovementMethod(new LinkMovementMethod());
-        TextView bodyView = (TextView) mRootView.findViewById(R.id.article_body);
-        bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
+
+        mBylineView.setMovementMethod(new LinkMovementMethod());
+
+        mBodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
 
 
-        if (mCursor != null) {
-            mRootView.setVisibility(View.VISIBLE);
+        if (mData != null) {
+            //mRootView.setVisibility(View.VISIBLE);
             /*mRootView.setAlpha(0);
             mRootView.setVisibility(View.VISIBLE);
             mRootView.animate().alpha(1);*/
 
-            String title = mCursor.getString(ArticleLoader.Query.TITLE);
+            String title = mData.title;
             Spanned byline = Html.fromHtml(
                     DateUtils.getRelativeTimeSpanString(
-                            mCursor.getLong(ArticleLoader.Query.PUBLISHED_DATE),
+                            mData.date,
                             System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
                             DateUtils.FORMAT_ABBREV_ALL).toString()
                             + " by <font color='#ffffff'>"
-                            + mCursor.getString(ArticleLoader.Query.AUTHOR)
+                            + mData.author
                             + "</font>");
 
-            if(mCollapsingToolbarLayout!=null)
+            if (mCollapsingToolbarLayout != null)
                 mCollapsingToolbarLayout.setTitle(title);
 
 
-            titleView.setText(title);
-            bylineView.setText(byline);
-            bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY)));
+            mTitleView.setText(title);
+            mBylineView.setText(byline);
+            mBodyView.setText(Html.fromHtml(mData.body));
 
-            String imageUrl = mCursor.getString(ArticleLoader.Query.PHOTO_URL);
-            Picasso.with(getActivity()).load(imageUrl).into(mPhotoView, new Callback() {
+            Picasso.with(getActivity()).load(mData.imageUrl).into(mPhotoView, new Callback() {
                 @Override
                 public void onSuccess() {
-                    Log.d(TAG,"Image loaded, itemid = " + mItemId);
+                    Log.d(TAG, "Image loaded, itemid = " + mData.id);
                     onImageLoaded();
                 }
 
@@ -255,8 +234,6 @@ public class ArticleDetailFragment extends Fragment implements
                     onImageLoaded();
                 }
             });
-
-            long id = mCursor.getLong(ArticleLoader.Query._ID);
 
 
             // TODO: generate palette
@@ -282,9 +259,9 @@ public class ArticleDetailFragment extends Fragment implements
                     });*/
         } else {
             //mRootView.setVisibility(View.GONE);
-            titleView.setText("N/A");
-            bylineView.setText("N/A");
-            bodyView.setText("N/A");
+            mTitleView.setText("N/A");
+            mBylineView.setText("N/A");
+            mBodyView.setText("N/A");
         }
     }
 
@@ -292,66 +269,56 @@ public class ArticleDetailFragment extends Fragment implements
      * Called after image load either failed of succeed
      */
     private void onImageLoaded() {
-        Log.d(TAG, "onImageLoaded, item id = mItemId");
-        getActivityCast().resumeContentTransitionAnimation(mItemId);
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return ArticleLoader.newInstanceForItemId(getActivity(), mItemId);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        if (!isAdded()) {
-            if (cursor != null) {
-                cursor.close();
-            }
-            return;
+        mImageLoaded=true;
+        Log.d(TAG, "onImageLoaded, item id = " + mData.id);
+        ArticleDetailActivity a = getActivityCast();
+        if (a != null && mResumeOnImageLoad) {
+            //a.resumeContentTransitionAnimation(mPhotoView, mData.id);
+            a.resumeContentTransitionAnimation(mData.id);
         }
-
-        mCursor = cursor;
-        if (mCursor != null && !mCursor.moveToFirst()) {
-            Log.e(TAG, "Error reading item detail cursor");
-            mCursor.close();
-            mCursor = null;
-        }
-
-        bindViews();
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-        mCursor = null;
-        bindViews();
     }
 
 
     public void transformPage(View page, float position) {
         int pageWidth = page.getWidth();
 
-        if(mToolbar!=null)
-        {
-            if(position < -1 || position > 1)
-            {
+        if (mToolbar != null) {
+            if (position < -1 || position > 1) {
                 mToolbar.setTranslationX(0);
-            }
-            else {
+            } else {
                 // Counteract the default slide transition
                 mToolbar.setTranslationX(pageWidth * -position);
             }
         }
         // Add a parralax effect when swiping between fragment
-        if(mPhotoView!=null)
+        if (mPhotoView != null) {
+            if (position < -1 || position > 1) {
+                mPhotoView.setTranslationX(0);
+            } else {
+                mPhotoView.setTranslationX(pageWidth * -position * .5f);
+            }
+        }
+
+        /*if(mFab!=null)
         {
             if(position < -1 || position > 1) {
-                mPhotoView.setTranslationX(0);
+                mFab.setTranslationX(0);
             }
             else
             {
-                mPhotoView.setTranslationX(pageWidth * -position / 2);
+                mFab.setTranslationX(pageWidth * -position *.37f);
+            }
+        }*/
+
+        if (mBodyView != null) {
+            if (position < -1 || position > 1) {
+                mBodyView.setTranslationX(0);
+            } else {
+                mBodyView.setTranslationX(pageWidth * -position * .5f);
             }
         }
+
+
     }
 
 

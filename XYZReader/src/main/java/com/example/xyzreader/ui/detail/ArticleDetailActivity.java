@@ -21,8 +21,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 
+import com.example.xyzreader.Utils;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.R;
@@ -62,7 +64,7 @@ public class ArticleDetailActivity extends AppCompatActivity
         if(thumbnailView!=null && ctx instanceof Activity)
         {
             String transitionName = ViewCompat.getTransitionName(thumbnailView);
-            Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) ctx, thumbnailView,ctx.getString(R.string.transition_main_image) ).toBundle();
+            Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) ctx, thumbnailView,transitionName ).toBundle();
             intent.putExtra(EXTRA_TRANSITION_NAME,transitionName);
             ctx.startActivity(intent,bundle);
         }
@@ -76,13 +78,16 @@ public class ArticleDetailActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        Log.d(TAG,"onCreate");
+
         super.onCreate(savedInstanceState);
         // TODO: put in resource
 
         if(savedInstanceState==null) {
-            /*Log.d(TAG,"Postponing enter transition");
+            Log.d(TAG,"Postponing enter transition");
             mPostponed = true;
-            ActivityCompat.postponeEnterTransition(this);*/
+            ActivityCompat.postponeEnterTransition(this);
         }
 
         if (savedInstanceState == null) {
@@ -111,7 +116,7 @@ public class ArticleDetailActivity extends AppCompatActivity
 
         mPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
         mPager = (ViewPager) findViewById(R.id.pager);
-        mPager.setAdapter(mPagerAdapter);
+        //mPager.setAdapter(mPagerAdapter);
         mPager.setPageTransformer(true, new Transformer());
         //mPager.setCurrentItem(mPosition);
         // TODO: set in resource
@@ -135,7 +140,7 @@ public class ArticleDetailActivity extends AppCompatActivity
             }
         });
 
-
+        Log.d(TAG, "onCreate exit");
 
     }
 
@@ -144,11 +149,21 @@ public class ArticleDetailActivity extends AppCompatActivity
         Log.d(TAG, "resumeContentTransitionAnimation, id = " + id + ", mItemId = " + mItemId);
         if(mPostponed && id == mItemId)
         {
-            Log.d(TAG,"Starting postponed enter transition");
-            mPostponed=false;
+            Log.d(TAG,"Resuming!");
             ActivityCompat.startPostponedEnterTransition(this);
         }
     }
+
+    /*public void resumeContentTransitionAnimation(View sharedElement, long id)
+    {
+        Log.d(TAG, "resumeContentTransitionAnimation with sharedElement, id = " + id + ", mItemId = " + mItemId);
+        if(mPostponed && id == mItemId)
+        {
+            Log.d(TAG, "Resuming!");
+            ActivityCompat.startPostponedEnterTransition(this);
+            //Utils.scheduleStartPostponedTransition(this,sharedElement);
+        }
+    }*/
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -157,24 +172,12 @@ public class ArticleDetailActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        Log.d(TAG,"onLoadFinished");
         mCursor = cursor;
-        mPagerAdapter.notifyDataSetChanged();
+        mPager.setAdapter(mPagerAdapter);
+        //mPagerAdapter.notifyDataSetChanged();
 
         mPager.setCurrentItem(mPosition, false);
-        /*// Select the start ID
-        if (mStartId > 0) {
-            mCursor.moveToFirst();
-            // TODO: optimize
-            while (!mCursor.isAfterLast()) {
-                if (mCursor.getLong(ArticleLoader.Query._ID) == mStartId) {
-                    final int position = mCursor.getPosition();
-                    mPager.setCurrentItem(position, false);
-                    break;
-                }
-                mCursor.moveToNext();
-            }
-            mStartId = 0;
-        }*/
     }
 
     @Override

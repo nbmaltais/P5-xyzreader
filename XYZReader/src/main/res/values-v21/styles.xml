@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.Bacon" parent="Base">
-
+        <item name="android:windowContentTransitions">true</item>
     </style>
 
     <style name="Theme.Bacon.Detail">
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowEnterTransition">@transition/detail_enter</item>
+        <item name="android:windowReturnTransition">@transition/detail_leave</item>
+
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>

@@ -1,14 +1,18 @@
 package com.example.xyzreader.ui.main;
 
+import android.animation.Animator;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 
 import com.example.xyzreader.R;
@@ -43,14 +47,21 @@ class Adapter extends RecyclerView.Adapter<ViewHolder> {
         View view = LayoutInflater.from(ctx).inflate(R.layout.list_item_article, parent, false);
         final ViewHolder vh = new ViewHolder(view);
         view.setOnClickListener(new View.OnClickListener() {
+            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View view) {
 
                 Uri uri = ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()));
-                ArticleDetailActivity.start(ctx,vh.getAdapterPosition(),uri,vh.thumbnailView);
+                ArticleDetailActivity.start(ctx, vh.getAdapterPosition(), uri, vh.thumbnailView);
 
-                /*ctx.startActivity(new Intent(Intent.ACTION_VIEW,
-                        ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));*/
+                /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    int cx = view.getWidth() / 2;
+                    int cy = view.getHeight() / 2;
+                    int radius = Utils.getDisplayHeight(view.getContext());
+                    Animator anim = ViewAnimationUtils.createCircularReveal(view, cx, cy, 0, radius);
+                    anim.start();
+
+                }*/
             }
         });
         return vh;
@@ -60,6 +71,7 @@ class Adapter extends RecyclerView.Adapter<ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
 
         Context ctx = holder.itemView.getContext();
+
 
         mCursor.moveToPosition(position);
         holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));

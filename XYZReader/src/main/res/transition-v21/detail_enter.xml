@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<transitionSet xmlns:android="http://schemas.android.com/apk/res/android"
+               android:transitionOrdering="together"
+               >
+
+    <fade android:duration="250">
+        <targets>
+            <target android:targetId="@id/appbar" />
+        </targets>
+    </fade>
+
+    <slide android:slideEdge="bottom" android:startDelay="100" android:duration="250">
+        <targets>
+            <target android:targetId="@id/scrollview" />
+        </targets>
+    </slide>
+</transitionSet>

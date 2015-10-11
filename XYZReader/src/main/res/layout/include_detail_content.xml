@@ -9,7 +9,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
-
+    android:layout_marginLeft="@dimen/detail_card_margin"
+    android:layout_marginRight="@dimen/detail_card_margin"
     android:background="#fff"
     android:elevation="2dp"
     android:maxWidth="@dimen/detail_card_max_width"
@@ -19,9 +20,10 @@
         android:id="@+id/share_fab"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_above="@+id/anchor"
+        android:layout_above="@+id/article_body"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
+        android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginRight="@dimen/fab_margin"
         android:contentDescription="@string/action_share"
         android:src="@drawable/ic_share"
@@ -66,6 +68,7 @@
         android:id="@+id/anchor"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         android:layout_below="@+id/meta_bar"/>
 
     <TextView

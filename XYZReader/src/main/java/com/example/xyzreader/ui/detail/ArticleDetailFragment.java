@@ -2,15 +2,18 @@ package com.example.xyzreader.ui.detail;
 
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
@@ -28,8 +31,9 @@ import android.widget.TextView;
 import com.example.xyzreader.Utils;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.R;
+import com.example.xyzreader.utility.ColorResolver;
+import com.example.xyzreader.utility.PaletteTransformation;
 import com.example.xyzreader.ui.main.ArticleListActivity;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -49,16 +53,18 @@ public class ArticleDetailFragment extends Fragment {
     private ImageView mPhotoView;
 
     private Toolbar mToolbar;
-    CollapsingToolbarLayout mCollapsingToolbarLayout;
+    private CollapsingToolbarLayout mCollapsingToolbarLayout;
 
     private DetailData mData;
     private TextView mTitleView;
     private TextView mBylineView;
     private TextView mBodyView;
-    private View mFab;
+    private FloatingActionButton mFab;
     private View mMetaBar;
     private boolean mImageLoaded = false;
     private boolean mResumeOnImageLoad = false;
+    private int mMutedColor;
+    private int mAccentColor;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -135,7 +141,7 @@ public class ArticleDetailFragment extends Fragment {
         mBylineView = (TextView) mRootView.findViewById(R.id.article_byline);
         mBodyView = (TextView) mRootView.findViewById(R.id.article_body);
         mMetaBar = mRootView.findViewById(R.id.meta_bar);
-        mFab = mRootView.findViewById(R.id.share_fab);
+        mFab = (FloatingActionButton)mRootView.findViewById(R.id.share_fab);
 
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,14 +171,15 @@ public class ArticleDetailFragment extends Fragment {
                 ArticleDetailActivity a = getActivityCast();
                 if (a != null && mImageLoaded) {
                     a.resumeContentTransitionAnimation(mData.id);
-                }
-                else
-                {
-                    mResumeOnImageLoad=true;
+                } else {
+                    mResumeOnImageLoad = true;
                 }
                 return true;
             }
         });
+
+        mMutedColor = getResources().getColor(R.color.primary);
+        mAccentColor = getResources().getColor(R.color.accent);
 
         Log.d(TAG, "onCreateView exit");
         return mRootView;
@@ -222,46 +229,50 @@ public class ArticleDetailFragment extends Fragment {
             mBylineView.setText(byline);
             mBodyView.setText(Html.fromHtml(mData.body));
 
-            Picasso.with(getActivity()).load(mData.imageUrl).into(mPhotoView, new Callback() {
-                @Override
-                public void onSuccess() {
-                    Log.d(TAG, "Image loaded, itemid = " + mData.id);
-                    onImageLoaded();
-                }
-
-                @Override
-                public void onError() {
-                    onImageLoaded();
-                }
-            });
 
 
-            // TODO: generate palette
-            /*ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
-                    .get(imageUrl, new ImageLoader.ImageListener() {
+            Picasso.with(getActivity()).load(mData.imageUrl)
+                    .transform(PaletteTransformation.instance())
+                    .into(mPhotoView, new PaletteTransformation.PaletteCallback(mPhotoView) {
                         @Override
-                        public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
-                            Bitmap bitmap = imageContainer.getBitmap();
-                            if (bitmap != null) {
-                                Palette p = Palette.generate(bitmap, 12);
-                                mMutedColor = p.getDarkMutedColor(0xFF333333);
-                                mPhotoView.setImageBitmap(imageContainer.getBitmap());
-                                mRootView.findViewById(R.id.meta_bar)
-                                        .setBackgroundColor(mMutedColor);
-                                updateStatusBar();
-                            }
+                        public void onError() {
+
+                            onImageLoaded();
                         }
 
                         @Override
-                        public void onErrorResponse(VolleyError volleyError) {
+                        protected void onSuccess(Palette palette) {
+                            Log.d(TAG, "Image loaded, itemid = " + mData.id);
+                            onImageLoaded();
+                            applyPalette(palette);
 
                         }
-                    });*/
+                    });
+
+
         } else {
             //mRootView.setVisibility(View.GONE);
             mTitleView.setText("N/A");
             mBylineView.setText("N/A");
             mBodyView.setText("N/A");
+        }
+    }
+
+    private void applyPalette(Palette palette) {
+
+        ColorResolver resolver = new ColorResolver(palette);
+
+        mMutedColor = resolver.getDominantColor();
+        mAccentColor = resolver.getAccentColor();
+        if(mMetaBar!=null) {
+            mMetaBar.setBackgroundColor(mMutedColor);
+
+        }
+        if(mFab!=null) {
+            mFab.setBackgroundTintList(ColorStateList.valueOf(mAccentColor));
+        }
+        if(mCollapsingToolbarLayout!=null) {
+            mCollapsingToolbarLayout.setContentScrimColor(mMutedColor);
         }
     }
 
@@ -299,23 +310,17 @@ public class ArticleDetailFragment extends Fragment {
             }
         }
 
-        /*if(mFab!=null)
-        {
-            if(position < -1 || position > 1) {
-                mFab.setTranslationX(0);
-            }
-            else
-            {
-                mFab.setTranslationX(pageWidth * -position *.37f);
-            }
-        }*/
+
 
         if (mBodyView != null) {
-            if (position < -1 || position > 1) {
+            /*if (position < -1 || position > 1) {
                 mBodyView.setTranslationX(0);
             } else {
                 mBodyView.setTranslationX(pageWidth * -position * .5f);
-            }
+            }*/
+            float a = position;
+            if(a<0)a=-1;
+            mBodyView.setAlpha(1-a);
         }
 
 

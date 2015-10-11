@@ -10,17 +10,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">-->
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingBottom="28dp"
-            android:paddingLeft="@dimen/list_side_margin"
-            android:paddingRight="@dimen/list_side_margin"
-            android:paddingTop="16dp"
-            android:scrollbarStyle="outsideOverlay"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@+id/recycler_view"
+        app:layout_anchorGravity="center"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/list_bottom_padding"
+        android:paddingLeft="@dimen/list_side_margin"
+        android:paddingRight="@dimen/list_side_margin"
+        android:paddingTop="@dimen/list_top_padding"
+        android:scrollbarStyle="outsideOverlay"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
     <!--</android.support.v4.widget.SwipeRefreshLayout>-->
 
     <android.support.design.widget.AppBarLayout
@@ -37,13 +44,14 @@
             android:elevation="0dp"
             app:layout_scrollFlags="scroll|enterAlways"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
             <ImageView
-                android:layout_marginTop="?attr/actionBarSize"
                 android:layout_width="wrap_content"
                 android:layout_height="?attr/listPreferredItemHeight"
                 android:layout_gravity="center_horizontal"
-                android:scaleType="center"
+                android:layout_marginTop="?attr/actionBarSize"
                 android:contentDescription="@string/app_name"
+                android:scaleType="center"
                 android:src="@drawable/logo"/>
         </android.support.v7.widget.Toolbar>
 

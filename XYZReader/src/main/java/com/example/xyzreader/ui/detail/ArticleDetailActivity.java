@@ -2,11 +2,14 @@ package com.example.xyzreader.ui.detail;
 
 
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.SharedElementCallback;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.support.v4.app.ActivityCompat;
@@ -31,18 +34,21 @@ import com.example.xyzreader.R;
 import com.example.xyzreader.widget.FixedRatioImageView;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.transform.Transformer;
 
 /**
  * An activity representing a single Article detail screen, letting you swipe between articles.
  */
+
 public class ArticleDetailActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = ArticleDetailActivity.class.getSimpleName();
     private static final String EXTRA_TRANSITION_NAME = "TRANSITION_NAME";
-    private static final String EXTRA_POSITION = "POSITION";
+    public static final String EXTRA_POSITION = "POSITION";
     private Cursor mCursor;
     private int mPosition;
     private long mItemId;
@@ -53,6 +59,7 @@ public class ArticleDetailActivity extends AppCompatActivity
 
     private HashMap<Integer,ArticleDetailFragment> mPagerFragments = new HashMap<>();
     private boolean mPostponed=false;
+    private boolean mEntering=true;
     private ArticleDetailFragment mCurrentFragment;
 
     public static void start(Context ctx, int position, Uri uri, FixedRatioImageView thumbnailView) {
@@ -75,6 +82,36 @@ public class ArticleDetailActivity extends AppCompatActivity
     }
 
 
+    /**
+     * This code is inspired from https://github.com/alexjlockwood/activity-transitions
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    class MySharedElementCallback extends SharedElementCallback {
+        @Override
+        public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+            // This callback is called both on entering and returning, so keep track
+            if(mEntering) {
+                mEntering=false;
+                Log.d(TAG, "ENTERING ----------- onMapSharedElements-----------------");
+            }
+            else
+            {
+                Log.d(TAG, "LEAVING ----------- onMapSharedElements-----------------");
+                // When returning, we nee to check if the view pager has changed. If so, we
+                // remap the shared lement
+                if(mCurrentFragment !=null && mCurrentFragment.getDataId()!=mItemId)
+                {
+                    Log.d(TAG,"Remapping");
+                    names.clear();
+                    sharedElements.clear();
+
+                    View sharedView = mCurrentFragment.getSharedImageView();
+                    names.add(sharedView.getTransitionName());
+                    sharedElements.put(sharedView.getTransitionName(), sharedView);
+                }
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +119,10 @@ public class ArticleDetailActivity extends AppCompatActivity
         Log.d(TAG,"onCreate");
 
         super.onCreate(savedInstanceState);
-        // TODO: put in resource
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // This is needed to remap the shared element if the view pager was used
+            setEnterSharedElementCallback(new MySharedElementCallback());
+        }
 
         if(savedInstanceState==null) {
             Log.d(TAG,"Postponing enter transition");
@@ -101,8 +141,10 @@ public class ArticleDetailActivity extends AppCompatActivity
         }
         else
         {
-            // todo get position
+            // todo get position from bundle
         }
+
+
 
 
         /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -147,6 +189,8 @@ public class ArticleDetailActivity extends AppCompatActivity
     public void resumeContentTransitionAnimation( long id)
     {
         Log.d(TAG, "resumeContentTransitionAnimation, id = " + id + ", mItemId = " + mItemId);
+        // Only resum the transitions if they wehre postponed and if the currently displayed fragment
+        // is done loading
         if(mPostponed && id == mItemId)
         {
             Log.d(TAG,"Resuming!");
@@ -154,16 +198,16 @@ public class ArticleDetailActivity extends AppCompatActivity
         }
     }
 
-    /*public void resumeContentTransitionAnimation(View sharedElement, long id)
-    {
-        Log.d(TAG, "resumeContentTransitionAnimation with sharedElement, id = " + id + ", mItemId = " + mItemId);
-        if(mPostponed && id == mItemId)
-        {
-            Log.d(TAG, "Resuming!");
-            ActivityCompat.startPostponedEnterTransition(this);
-            //Utils.scheduleStartPostponedTransition(this,sharedElement);
-        }
-    }*/
+    @Override
+    public void supportFinishAfterTransition() {
+
+        // Communicate back to the activity the current pager position so it can adjust the recycler view
+        Intent data = new Intent();;
+        data.putExtra(EXTRA_POSITION, mPosition);
+        setResult(RESULT_OK, data);
+
+        super.supportFinishAfterTransition();
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {

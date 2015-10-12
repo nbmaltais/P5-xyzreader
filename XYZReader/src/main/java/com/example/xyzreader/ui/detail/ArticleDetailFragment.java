@@ -65,6 +65,7 @@ public class ArticleDetailFragment extends Fragment {
     private boolean mResumeOnImageLoad = false;
     private int mMutedColor;
     private int mAccentColor;
+    private View mSharedImageView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -232,6 +233,8 @@ public class ArticleDetailFragment extends Fragment {
 
 
             Picasso.with(getActivity()).load(mData.imageUrl)
+                    .fit()
+                    .centerCrop()
                     .transform(PaletteTransformation.instance())
                     .into(mPhotoView, new PaletteTransformation.PaletteCallback(mPhotoView) {
                         @Override
@@ -320,11 +323,18 @@ public class ArticleDetailFragment extends Fragment {
             }*/
             float a = position;
             if(a<0)a=-1;
-            mBodyView.setAlpha(1-a);
+            mBodyView.setAlpha(1 - a);
         }
 
 
     }
 
+    public long getDataId()
+    {
+        return mData.id;
+    }
 
+    public View getSharedImageView() {
+        return mPhotoView;
+    }
 }

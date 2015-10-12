@@ -47,6 +47,7 @@ public class ArticleListActivity extends AppCompatActivity implements
 
         //final View toolbarContainerView = findViewById(R.id.toolbar_container);
 
+
         //mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
@@ -55,6 +56,17 @@ public class ArticleListActivity extends AppCompatActivity implements
         if (savedInstanceState == null) {
             refresh();
         }
+    }
+
+    @Override
+    public void onActivityReenter(int resultCode, Intent data) {
+        super.onActivityReenter(resultCode, data);
+
+        if(data!=null) {
+            int position = data.getIntExtra(ArticleDetailActivity.EXTRA_POSITION, 0);
+            mRecyclerView.scrollToPosition(position);
+        }
+
     }
 
     private void refresh() {

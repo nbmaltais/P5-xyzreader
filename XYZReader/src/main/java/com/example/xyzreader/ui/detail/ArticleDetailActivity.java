@@ -49,6 +49,7 @@ public class ArticleDetailActivity extends AppCompatActivity
     private static final String TAG = ArticleDetailActivity.class.getSimpleName();
     private static final String EXTRA_TRANSITION_NAME = "TRANSITION_NAME";
     public static final String EXTRA_POSITION = "POSITION";
+    public static final String EXTRA_ITEMID = "ITEMID";
     private Cursor mCursor;
     private int mPosition;
     private long mItemId;
@@ -97,8 +98,8 @@ public class ArticleDetailActivity extends AppCompatActivity
             else
             {
                 Log.d(TAG, "LEAVING ----------- onMapSharedElements-----------------");
-                // When returning, we nee to check if the view pager has changed. If so, we
-                // remap the shared lement
+                // When returning, we need to check if the view pager has changed. If so, we
+                // remap the shared elements. this must also be done in the activity we return to
                 if(mCurrentFragment !=null && mCurrentFragment.getDataId()!=mItemId)
                 {
                     Log.d(TAG,"Remapping");
@@ -158,13 +159,8 @@ public class ArticleDetailActivity extends AppCompatActivity
 
         mPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
         mPager = (ViewPager) findViewById(R.id.pager);
-        //mPager.setAdapter(mPagerAdapter);
         mPager.setPageTransformer(true, new Transformer());
-        //mPager.setCurrentItem(mPosition);
-        // TODO: set in resource
-        /*mPager.setPageMargin((int) TypedValue
-                .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics()));
-        mPager.setPageMarginDrawable(new ColorDrawable(0x22000000));*/
+
 
         mPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
@@ -204,6 +200,8 @@ public class ArticleDetailActivity extends AppCompatActivity
         // Communicate back to the activity the current pager position so it can adjust the recycler view
         Intent data = new Intent();;
         data.putExtra(EXTRA_POSITION, mPosition);
+        if(mCurrentFragment!=null)
+            data.putExtra(EXTRA_ITEMID,mCurrentFragment.getDataId());
         setResult(RESULT_OK, data);
 
         super.supportFinishAfterTransition();

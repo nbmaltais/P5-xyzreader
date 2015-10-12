@@ -24,6 +24,11 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:elevation="@dimen/appbar_elevation">
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_scrollFlags="scroll"/>
+        
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -36,7 +41,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="?attr/listPreferredItemHeight"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="?attr/actionBarSize"
                 android:contentDescription="@string/app_name"
                 android:scaleType="center"
                 android:src="@drawable/logo"/>

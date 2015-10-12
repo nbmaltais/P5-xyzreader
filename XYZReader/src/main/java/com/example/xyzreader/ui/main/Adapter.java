@@ -88,10 +88,16 @@ class Adapter extends RecyclerView.Adapter<ViewHolder> {
 
         holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
 
-        ViewCompat.setTransitionName(holder.thumbnailView, Utils.makeImageTransitionName(getItemId(position)));//
+        String transitionName = Utils.makeImageTransitionName(getItemId(position));
+        ViewCompat.setTransitionName(holder.thumbnailView, transitionName);
+        // Set the tag to be able to find the imsage in the recycler view when remaping shared lements
+        holder.thumbnailView.setTag(transitionName);
 
         // TODO: add place holder
-        Picasso.with(ctx).load(imageUrl).into(holder.thumbnailView);
+        Picasso.with(ctx).load(imageUrl)
+                .fit()
+                .centerCrop()
+                .into(holder.thumbnailView);
     }
 
     @Override

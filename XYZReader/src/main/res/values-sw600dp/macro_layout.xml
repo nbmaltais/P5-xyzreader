@@ -1,5 +1,6 @@
 <resources>
     <dimen name="logo_marginLeft">@dimen/keyline_2</dimen>
+    <integer name="list_column_count">2</integer>
 
     <!-- detail -->
     <dimen name="detail_photo_height">384dp</dimen>

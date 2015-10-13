@@ -21,6 +21,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.transition.Transition;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,6 +95,10 @@ public class ArticleDetailActivity extends AppCompatActivity
             if(mEntering) {
                 mEntering=false;
                 Log.d(TAG, "ENTERING ----------- onMapSharedElements-----------------");
+
+                /*View v = mCurrentFragment.getContentScrollView();
+                names.add(v.getTransitionName());
+                sharedElements.put(v.getTransitionName(),v);*/
             }
             else
             {
@@ -129,6 +134,7 @@ public class ArticleDetailActivity extends AppCompatActivity
             Log.d(TAG,"Postponing enter transition");
             mPostponed = true;
             ActivityCompat.postponeEnterTransition(this);
+
         }
 
         if (savedInstanceState == null) {
@@ -146,13 +152,6 @@ public class ArticleDetailActivity extends AppCompatActivity
         }
 
 
-
-
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-        }*/
         setContentView(R.layout.activity_article_detail);
 
         getSupportLoaderManager().initLoader(0, null, this);
@@ -185,11 +184,20 @@ public class ArticleDetailActivity extends AppCompatActivity
     public void resumeContentTransitionAnimation( long id)
     {
         Log.d(TAG, "resumeContentTransitionAnimation, id = " + id + ", mItemId = " + mItemId);
-        // Only resum the transitions if they wehre postponed and if the currently displayed fragment
+        // Only resume the transitions if they wehre postponed and if the currently displayed fragment
         // is done loading
         if(mPostponed && id == mItemId)
         {
-            Log.d(TAG,"Resuming!");
+            Log.d(TAG, "Resuming!");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                // All this is because the slide up content transition animation does not work
+                // when we use the scroll view over an image background layout.
+                // Instead , we queue the slide at the end of the shared transition animation
+                // Is there an easier way??
+                Transition.TransitionListener transitionListener = mCurrentFragment.getTransitionListener();
+                if(transitionListener!=null)
+                    getWindow().getSharedElementEnterTransition().addListener(transitionListener);
+            }
             ActivityCompat.startPostponedEnterTransition(this);
         }
     }

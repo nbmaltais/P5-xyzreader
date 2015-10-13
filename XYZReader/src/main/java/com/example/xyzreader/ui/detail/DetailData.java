@@ -14,7 +14,11 @@ public class DetailData implements Parcelable {
     public String author;
     public String body;
     public String imageUrl;
+    public String thumbUrl;
     public long id;
+
+    public DetailData() {
+    }
 
     @Override
     public int describeContents() {
@@ -28,10 +32,8 @@ public class DetailData implements Parcelable {
         dest.writeString(this.author);
         dest.writeString(this.body);
         dest.writeString(this.imageUrl);
+        dest.writeString(this.thumbUrl);
         dest.writeLong(this.id);
-    }
-
-    public DetailData() {
     }
 
     protected DetailData(Parcel in) {
@@ -40,10 +42,11 @@ public class DetailData implements Parcelable {
         this.author = in.readString();
         this.body = in.readString();
         this.imageUrl = in.readString();
+        this.thumbUrl = in.readString();
         this.id = in.readLong();
     }
 
-    public static final Parcelable.Creator<DetailData> CREATOR = new Parcelable.Creator<DetailData>() {
+    public static final Creator<DetailData> CREATOR = new Creator<DetailData>() {
         public DetailData createFromParcel(Parcel source) {
             return new DetailData(source);
         }

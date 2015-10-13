@@ -1,10 +1,12 @@
 package com.example.xyzreader.ui.detail;
 
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -19,6 +21,7 @@ import android.text.Html;
 import android.text.Spanned;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
+import android.transition.Transition;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +35,8 @@ import com.example.xyzreader.Utils;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.R;
 import com.example.xyzreader.utility.ColorResolver;
+import com.example.xyzreader.utility.DarkMutedColorResolver;
+import com.example.xyzreader.utility.DominantColorResolver;
 import com.example.xyzreader.utility.PaletteTransformation;
 import com.example.xyzreader.ui.main.ArticleListActivity;
 import com.squareup.picasso.Picasso;
@@ -59,10 +64,12 @@ public class ArticleDetailFragment extends Fragment {
     private TextView mTitleView;
     private TextView mBylineView;
     private TextView mBodyView;
+    private View mScrollview;
     private FloatingActionButton mFab;
     private View mMetaBar;
     private boolean mImageLoaded = false;
     private boolean mResumeOnImageLoad = false;
+    private boolean mIsCard=false;
     private int mMutedColor;
     private int mAccentColor;
     private View mSharedImageView;
@@ -84,7 +91,7 @@ public class ArticleDetailFragment extends Fragment {
         data.author = cursor.getString(ArticleLoader.Query.AUTHOR);
         data.body = cursor.getString(ArticleLoader.Query.BODY);
         data.imageUrl = cursor.getString(ArticleLoader.Query.PHOTO_URL);
-        //data.imageUrl = cursor.getString(ArticleLoader.Query.THUMB_URL);
+        data.thumbUrl = cursor.getString(ArticleLoader.Query.THUMB_URL);
         data.id = cursor.getLong(ArticleLoader.Query._ID);
 
         Bundle args = new Bundle();
@@ -131,6 +138,8 @@ public class ArticleDetailFragment extends Fragment {
 
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
 
+        mIsCard = getResources().getBoolean(R.bool.is_card);
+
         mToolbar = (Toolbar) mRootView.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
 
@@ -143,6 +152,7 @@ public class ArticleDetailFragment extends Fragment {
         mBodyView = (TextView) mRootView.findViewById(R.id.article_body);
         mMetaBar = mRootView.findViewById(R.id.meta_bar);
         mFab = (FloatingActionButton)mRootView.findViewById(R.id.share_fab);
+        mScrollview = mRootView.findViewById(R.id.scrollview);
 
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,8 +192,49 @@ public class ArticleDetailFragment extends Fragment {
         mMutedColor = getResources().getColor(R.color.primary);
         mAccentColor = getResources().getColor(R.color.accent);
 
+
         Log.d(TAG, "onCreateView exit");
         return mRootView;
+    }
+
+    /**
+     * Return a transition listenner that will be appened to the shared element transition animator
+     * @return
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public Transition.TransitionListener getTransitionListener()
+    {
+        if(!mIsCard)
+            return null;
+
+        mScrollview.setVisibility(View.INVISIBLE);
+        return new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+                mScrollview.setVisibility(View.VISIBLE);
+                mScrollview.setTranslationY(mPhotoView.getHeight());
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                mScrollview.animate().translationY(0);
+            }
+
+            @Override
+            public void onTransitionCancel(Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionPause(Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionResume(Transition transition) {
+
+            }
+        };
     }
 
     private void adjustToolbarPadding(Toolbar toolbar) {
@@ -231,7 +282,7 @@ public class ArticleDetailFragment extends Fragment {
             mBodyView.setText(Html.fromHtml(mData.body));
 
 
-
+            // Start with low res version that should be already loaded to make things fast
             Picasso.with(getActivity()).load(mData.imageUrl)
                     .fit()
                     .centerCrop()
@@ -249,6 +300,12 @@ public class ArticleDetailFragment extends Fragment {
                             onImageLoaded();
                             applyPalette(palette);
 
+                            // Good! now load high res version
+                            /*Picasso.with(getActivity()).load(mData.imageUrl)
+                                    .fit()
+                                    .centerCrop()
+                                    .transform(PaletteTransformation.instance())
+                                    .into(mPhotoView);*/
                         }
                     });
 
@@ -263,10 +320,28 @@ public class ArticleDetailFragment extends Fragment {
 
     private void applyPalette(Palette palette) {
 
-        ColorResolver resolver = new ColorResolver(palette);
+        ColorResolver resolver;
 
-        mMutedColor = resolver.getDominantColor();
-        mAccentColor = resolver.getAccentColor();
+        if(mIsCard) {
+            resolver = new DarkMutedColorResolver(palette);
+
+            if (!resolver.isResolved())
+                resolver = new DominantColorResolver(palette);
+            if (!resolver.isResolved())
+                return;
+        }
+        else
+        {
+            resolver = new DominantColorResolver(palette);
+
+            if (!resolver.isResolved())
+                resolver = new DarkMutedColorResolver(palette);
+            if (!resolver.isResolved())
+                return;
+        }
+
+        mMutedColor = resolver.getPrimarySwatch().getRgb();
+        mAccentColor = resolver.getAccentSwatch().getRgb();
         if(mMetaBar!=null) {
             mMetaBar.setBackgroundColor(mMutedColor);
 
@@ -290,6 +365,7 @@ public class ArticleDetailFragment extends Fragment {
             //a.resumeContentTransitionAnimation(mPhotoView, mData.id);
             a.resumeContentTransitionAnimation(mData.id);
         }
+
     }
 
 
@@ -337,4 +413,6 @@ public class ArticleDetailFragment extends Fragment {
     public View getSharedImageView() {
         return mPhotoView;
     }
+
+    public View getContentScrollView() { return mScrollview;}
 }

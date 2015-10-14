@@ -76,6 +76,13 @@ public class ArticleListActivity extends AppCompatActivity implements
                     }
                 }
             }
+            else
+            {
+                String name = getString(R.string.transitionName_scrollView);
+                names.add(name);
+                sharedElements.put(name,null);
+
+            }
         }
     }
 

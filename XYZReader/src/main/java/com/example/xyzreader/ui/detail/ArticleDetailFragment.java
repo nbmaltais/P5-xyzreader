@@ -114,8 +114,6 @@ public class ArticleDetailFragment extends Fragment {
             mData = getArguments().getParcelable(KEY_DATA);
         }
 
-        //mIsCard = getResources().getBoolean(R.bool.detail_is_card);
-
         setHasOptionsMenu(true);
     }
 
@@ -197,21 +195,6 @@ public class ArticleDetailFragment extends Fragment {
         return mRootView;
     }
 
-    public void initContentEnterTransition()
-    {
-        if(mIsCard) {
-            mScrollview.setVisibility(View.INVISIBLE);
-            mScrollview.setTranslationY(mPhotoView.getHeight());
-        }
-    }
-
-    public void performContentEnterTransition()
-    {
-        if(mIsCard) {
-            mScrollview.setVisibility(View.VISIBLE);
-            mScrollview.animate().translationY(0);
-        }
-    }
 
 
     private void adjustToolbarPadding(Toolbar toolbar) {

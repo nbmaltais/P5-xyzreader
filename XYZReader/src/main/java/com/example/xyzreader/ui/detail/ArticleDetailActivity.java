@@ -63,9 +63,10 @@ public class ArticleDetailActivity extends AppCompatActivity
     private boolean mPostponed=false;
     private boolean mEntering=true;
     private ArticleDetailFragment mCurrentFragment;
+    private boolean mIsCard=false;
 
     public static void start(Context ctx, int position, Uri uri, FixedRatioImageView thumbnailView) {
-        Log.d(TAG,"Starting activity, uri = " + uri);
+        Log.d(TAG, "Starting activity, uri = " + uri);
         Intent intent = new Intent(ctx,ArticleDetailActivity.class);
         intent.setData(uri);
         intent.putExtra(EXTRA_POSITION, position);
@@ -89,10 +90,6 @@ public class ArticleDetailActivity extends AppCompatActivity
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     class MySharedElementCallback extends SharedElementCallback {
-        @Override
-        public void onSharedElementStart(List<String> sharedElementNames, List<View> sharedElements, List<View> sharedElementSnapshots) {
-            mCurrentFragment.initContentEnterTransition();
-        }
 
         @Override
         public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
@@ -101,9 +98,6 @@ public class ArticleDetailActivity extends AppCompatActivity
                 mEntering=false;
                 Log.d(TAG, "ENTERING ----------- onMapSharedElements-----------------");
 
-                /*View v = mCurrentFragment.getContentScrollView();
-                names.add(v.getTransitionName());
-                sharedElements.put(v.getTransitionName(),v);*/
             }
             else
             {
@@ -130,6 +124,9 @@ public class ArticleDetailActivity extends AppCompatActivity
         Log.d(TAG,"onCreate");
 
         super.onCreate(savedInstanceState);
+
+        mIsCard = getResources().getBoolean(R.bool.is_card);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // This is needed to remap the shared element if the view pager was used
             setEnterSharedElementCallback(new MySharedElementCallback());
@@ -157,35 +154,14 @@ public class ArticleDetailActivity extends AppCompatActivity
         }
 
 
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().getSharedElementEnterTransition().addListener(new Transition.TransitionListener() {
-                @Override
-                public void onTransitionStart(Transition transition) {
-                    /*if(mCurrentFragment!=null)
-                        mCurrentFragment.initContentEnterTransition();*/
-                }
+            // Disable overlay in card layout. This is necessary else the image will always be drawn above the
+            // scroll view
+            if(mIsCard) {
+                getWindow().setSharedElementsUseOverlay(false);
+            }
 
-                @Override
-                public void onTransitionEnd(Transition transition) {
-                    if(mCurrentFragment!=null)
-                        mCurrentFragment.performContentEnterTransition();
-                }
-
-                @Override
-                public void onTransitionCancel(Transition transition) {
-
-                }
-
-                @Override
-                public void onTransitionPause(Transition transition) {
-
-                }
-
-                @Override
-                public void onTransitionResume(Transition transition) {
-
-                }
-            });
         }
 
 

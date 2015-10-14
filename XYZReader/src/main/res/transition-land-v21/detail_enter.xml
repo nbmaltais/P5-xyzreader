@@ -3,12 +3,11 @@
                android:transitionOrdering="together"
     >
 
-    <!--
 
     <slide android:slideEdge="bottom" android:startDelay="300" android:duration="250">
         <targets>
             <target android:targetId="@id/scrollview" />
         </targets>
-    </slide>-->
+    </slide>
 
 </transitionSet>

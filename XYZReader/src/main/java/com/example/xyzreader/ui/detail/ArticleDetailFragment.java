@@ -197,45 +197,22 @@ public class ArticleDetailFragment extends Fragment {
         return mRootView;
     }
 
-    /**
-     * Return a transition listenner that will be appened to the shared element transition animator
-     * @return
-     */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public Transition.TransitionListener getTransitionListener()
+    public void initContentEnterTransition()
     {
-        if(!mIsCard)
-            return null;
-
-        mScrollview.setVisibility(View.INVISIBLE);
-        return new Transition.TransitionListener() {
-            @Override
-            public void onTransitionStart(Transition transition) {
-                mScrollview.setVisibility(View.VISIBLE);
-                mScrollview.setTranslationY(mPhotoView.getHeight());
-            }
-
-            @Override
-            public void onTransitionEnd(Transition transition) {
-                mScrollview.animate().translationY(0);
-            }
-
-            @Override
-            public void onTransitionCancel(Transition transition) {
-
-            }
-
-            @Override
-            public void onTransitionPause(Transition transition) {
-
-            }
-
-            @Override
-            public void onTransitionResume(Transition transition) {
-
-            }
-        };
+        if(mIsCard) {
+            mScrollview.setVisibility(View.INVISIBLE);
+            mScrollview.setTranslationY(mPhotoView.getHeight());
+        }
     }
+
+    public void performContentEnterTransition()
+    {
+        if(mIsCard) {
+            mScrollview.setVisibility(View.VISIBLE);
+            mScrollview.animate().translationY(0);
+        }
+    }
+
 
     private void adjustToolbarPadding(Toolbar toolbar) {
         int padding = Utils.getStatusBarHeight(getActivity());

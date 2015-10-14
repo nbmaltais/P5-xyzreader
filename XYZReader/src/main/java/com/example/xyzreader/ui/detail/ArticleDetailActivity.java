@@ -90,6 +90,11 @@ public class ArticleDetailActivity extends AppCompatActivity
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     class MySharedElementCallback extends SharedElementCallback {
         @Override
+        public void onSharedElementStart(List<String> sharedElementNames, List<View> sharedElements, List<View> sharedElementSnapshots) {
+            mCurrentFragment.initContentEnterTransition();
+        }
+
+        @Override
         public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
             // This callback is called both on entering and returning, so keep track
             if(mEntering) {
@@ -152,6 +157,38 @@ public class ArticleDetailActivity extends AppCompatActivity
         }
 
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getSharedElementEnterTransition().addListener(new Transition.TransitionListener() {
+                @Override
+                public void onTransitionStart(Transition transition) {
+                    /*if(mCurrentFragment!=null)
+                        mCurrentFragment.initContentEnterTransition();*/
+                }
+
+                @Override
+                public void onTransitionEnd(Transition transition) {
+                    if(mCurrentFragment!=null)
+                        mCurrentFragment.performContentEnterTransition();
+                }
+
+                @Override
+                public void onTransitionCancel(Transition transition) {
+
+                }
+
+                @Override
+                public void onTransitionPause(Transition transition) {
+
+                }
+
+                @Override
+                public void onTransitionResume(Transition transition) {
+
+                }
+            });
+        }
+
+
         setContentView(R.layout.activity_article_detail);
 
         getSupportLoaderManager().initLoader(0, null, this);
@@ -189,15 +226,6 @@ public class ArticleDetailActivity extends AppCompatActivity
         if(mPostponed && id == mItemId)
         {
             Log.d(TAG, "Resuming!");
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                // All this is because the slide up content transition animation does not work
-                // when we use the scroll view over an image background layout.
-                // Instead , we queue the slide at the end of the shared transition animation
-                // Is there an easier way??
-                Transition.TransitionListener transitionListener = mCurrentFragment.getTransitionListener();
-                if(transitionListener!=null)
-                    getWindow().getSharedElementEnterTransition().addListener(transitionListener);
-            }
             ActivityCompat.startPostponedEnterTransition(this);
         }
     }

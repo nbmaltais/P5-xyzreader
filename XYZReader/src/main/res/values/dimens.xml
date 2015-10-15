@@ -15,6 +15,9 @@
     <dimen name="list_bottom_padding">16dp</dimen>
     <dimen name="list_top_padding">16dp</dimen>
     <dimen name="detail_card_toolbar_elevation">0dp</dimen>
+    <dimen name="detail_body_top_padding">16dp</dimen>
+    <dimen name="fab_size">56dp</dimen>
+
 
 
 </resources>

@@ -8,6 +8,7 @@ import android.app.SharedElementCallback;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -91,6 +92,26 @@ public class ArticleDetailActivity extends AppCompatActivity
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     class MySharedElementCallback extends SharedElementCallback {
+
+        @Override
+        public void onSharedElementStart(List<String> sharedElementNames, List<View> sharedElements, List<View> sharedElementSnapshots) {
+
+            ImageView imageView = (ImageView)mCurrentFragment.getSharedImageView();
+            for (int i = 0; i < sharedElements.size(); i++) {
+                if (sharedElements.get(i) == imageView) {
+                    View snapshot = sharedElementSnapshots.get(i);
+                    Drawable snapshotDrawable = snapshot.getBackground();
+
+                    mCurrentFragment.setSharedImageViewSnapshotImage(snapshotDrawable);
+
+                    //imageView.setImageDrawable(snapshotDrawable);
+                    /*sharedElement.setImageAlpha(0);
+                    forceSharedElementLayout();*/
+                    break;
+                }
+            }
+
+        }
 
         @Override
         public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {

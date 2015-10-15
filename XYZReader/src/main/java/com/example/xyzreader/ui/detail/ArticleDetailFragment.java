@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -172,17 +173,18 @@ public class ArticleDetailFragment extends Fragment {
         ViewCompat.setTransitionName(mPhotoView, Utils.makeImageTransitionName(mData.id));
         bindViews();
 
+        //mImageLoaded=true;
         mRootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
                 Log.d(TAG, "mRootView.getViewTreeObserver().onPreDraw, itemId = " + mData.id);
                 mRootView.getViewTreeObserver().removeOnPreDrawListener(this);
                 ArticleDetailActivity a = getActivityCast();
-                if (a != null && mImageLoaded) {
+                if (a != null /*&& mImageLoaded*/) {
                     a.resumeContentTransitionAnimation(mData.id);
-                } else {
+                } /*else {
                     mResumeOnImageLoad = true;
-                }
+                }*/
                 return true;
             }
         });
@@ -242,10 +244,11 @@ public class ArticleDetailFragment extends Fragment {
             mBodyView.setText(Html.fromHtml(mData.body));
 
 
-            // Start with low res version that should be already loaded to make things fast
+
             Picasso.with(getActivity()).load(mData.imageUrl)
                     .fit()
                     .centerCrop()
+                    .placeholder(R.drawable.image_placeholder)
                     .transform(PaletteTransformation.instance())
                     .into(mPhotoView, new PaletteTransformation.PaletteCallback(mPhotoView) {
                         @Override
@@ -320,11 +323,11 @@ public class ArticleDetailFragment extends Fragment {
     private void onImageLoaded() {
         mImageLoaded=true;
         Log.d(TAG, "onImageLoaded, item id = " + mData.id);
-        ArticleDetailActivity a = getActivityCast();
+        /*ArticleDetailActivity a = getActivityCast();
         if (a != null && mResumeOnImageLoad) {
             //a.resumeContentTransitionAnimation(mPhotoView, mData.id);
             a.resumeContentTransitionAnimation(mData.id);
-        }
+        }*/
 
     }
 
@@ -375,4 +378,18 @@ public class ArticleDetailFragment extends Fragment {
     }
 
     public View getContentScrollView() { return mScrollview;}
+
+    /**
+     * This method is called from the parent activity to set an initial image.
+     * This is the snapshot image acquired from the list activity. It will be replaced by the
+     * high res image when it is loaded.
+     * @param snapshotDrawable
+     */
+    public void setSharedImageViewSnapshotImage(Drawable snapshotDrawable) {
+        // If high res image is already loaded, don't change it!
+        if(mImageLoaded==false)
+        {
+            mPhotoView.setImageDrawable(snapshotDrawable);
+        }
+    }
 }

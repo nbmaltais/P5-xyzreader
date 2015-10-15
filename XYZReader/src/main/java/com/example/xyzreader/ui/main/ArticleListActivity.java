@@ -8,8 +8,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
@@ -21,6 +29,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -54,6 +63,8 @@ public class ArticleListActivity extends AppCompatActivity implements
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     class MySharedElementCallback extends SharedElementCallback
     {
+
+
         @Override
         public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
             // This is called wehn exiting and reentering, so keep track
@@ -84,6 +95,8 @@ public class ArticleListActivity extends AppCompatActivity implements
 
             }
         }
+
+
     }
 
     @Override

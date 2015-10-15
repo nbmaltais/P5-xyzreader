@@ -2,13 +2,12 @@
     <!-- list -->
     <dimen name="keyline1">80dp</dimen>
     <dimen name="list_side_margin">64dp</dimen>
-    <dimen name="list_toolbar_side_margin">52dp</dimen> <!-- minus 64 - 12 -->
+
     <integer name="list_column_count">3</integer>
 
     <!-- detail -->
     <bool name="is_card">true</bool>
     <dimen name="detail_card_max_width">704dp</dimen>
-    <dimen name="detail_appbar_height">112dp</dimen>
     <dimen name="toolbar_start_elevation">0dp</dimen>
     <dimen name="detail_content_paddingTop">244dp</dimen>
     <dimen name="detail_content_elevation">2dp</dimen>

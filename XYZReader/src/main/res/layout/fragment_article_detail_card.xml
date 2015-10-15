@@ -37,7 +37,7 @@
         android:id="@id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:elevation="@dimen/toolbar_start_elevation"
+        android:elevation="@dimen/detail_card_toolbar_elevation"
         android:minHeight="?attr/actionBarSize"
         app:layout_scrollFlags="scroll|exitUntilCollapsed"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"

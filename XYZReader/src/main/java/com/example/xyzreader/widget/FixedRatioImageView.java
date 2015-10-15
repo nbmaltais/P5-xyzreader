@@ -30,7 +30,7 @@ public class FixedRatioImageView extends ImageView {
 
     private void init(Context context, AttributeSet attrs, int defStyle) {
         final TypedArray a = context.obtainStyledAttributes(attrs,
-                R.styleable.DrawInsetsFrameLayout, defStyle, 0);
+                R.styleable.FixedRatioImageView, defStyle, 0);
         assert a != null;
 
         mAspectRatio = a.getFloat(R.styleable.FixedRatioImageView_ratio, mAspectRatio);

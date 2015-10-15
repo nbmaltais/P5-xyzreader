@@ -177,7 +177,7 @@ public class ArticleDetailFragment extends Fragment {
         mRootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
-                Log.d(TAG, "mRootView.getViewTreeObserver().onPreDraw, itemId = " + mData.id);
+                //Log.d(TAG, "mRootView.getViewTreeObserver().onPreDraw, itemId = " + mData.id);
                 mRootView.getViewTreeObserver().removeOnPreDrawListener(this);
                 ArticleDetailActivity a = getActivityCast();
                 if (a != null /*&& mImageLoaded*/) {
@@ -248,7 +248,8 @@ public class ArticleDetailFragment extends Fragment {
             Picasso.with(getActivity()).load(mData.imageUrl)
                     .fit()
                     .centerCrop()
-                    .placeholder(R.drawable.image_placeholder)
+                    .noFade()
+                    //.placeholder(R.drawable.image_placeholder)
                     .transform(PaletteTransformation.instance())
                     .into(mPhotoView, new PaletteTransformation.PaletteCallback(mPhotoView) {
                         @Override
@@ -283,6 +284,9 @@ public class ArticleDetailFragment extends Fragment {
 
     private void applyPalette(Palette palette) {
 
+        if(getActivity()==null)
+            return;
+
         ColorResolver resolver;
 
         if(mIsCard) {
@@ -302,15 +306,22 @@ public class ArticleDetailFragment extends Fragment {
             if (!resolver.isResolved())
                 return;
         }
-
+        long duration=300;
         mMutedColor = resolver.getPrimarySwatch().getRgb();
         mAccentColor = resolver.getAccentSwatch().getRgb();
-        if(mMetaBar!=null) {
-            mMetaBar.setBackgroundColor(mMutedColor);
 
+        int primary = getResources().getColor(R.color.primary);
+        int accent = getResources().getColor(R.color.accent);
+        if(mMetaBar!=null) {
+
+            int colorFrom = Utils.getBackgroundColor(mMetaBar,primary);
+            //mMetaBar.setBackgroundColor(mMutedColor);
+            Utils.animateBackgroundColor(mMetaBar,colorFrom,mMutedColor,duration);
         }
         if(mFab!=null) {
-            mFab.setBackgroundTintList(ColorStateList.valueOf(mAccentColor));
+            int colorFrom = mFab.getBackgroundTintList().getDefaultColor();
+            //mFab.setBackgroundTintList(ColorStateList.valueOf(mAccentColor));
+            Utils.animateBackgroundTintList(mFab,colorFrom,mAccentColor,duration);
         }
         if(mCollapsingToolbarLayout!=null) {
             mCollapsingToolbarLayout.setContentScrimColor(mMutedColor);

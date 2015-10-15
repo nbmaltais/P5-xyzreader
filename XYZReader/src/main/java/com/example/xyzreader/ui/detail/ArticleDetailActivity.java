@@ -96,6 +96,8 @@ public class ArticleDetailActivity extends AppCompatActivity
         @Override
         public void onSharedElementStart(List<String> sharedElementNames, List<View> sharedElements, List<View> sharedElementSnapshots) {
 
+            // Use the snapshot as the initil image. When the full res image is loaded, it
+            // will replace the snapshot.
             ImageView imageView = (ImageView)mCurrentFragment.getSharedImageView();
             for (int i = 0; i < sharedElements.size(); i++) {
                 if (sharedElements.get(i) == imageView) {
@@ -103,10 +105,6 @@ public class ArticleDetailActivity extends AppCompatActivity
                     Drawable snapshotDrawable = snapshot.getBackground();
 
                     mCurrentFragment.setSharedImageViewSnapshotImage(snapshotDrawable);
-
-                    //imageView.setImageDrawable(snapshotDrawable);
-                    /*sharedElement.setImageAlpha(0);
-                    forceSharedElementLayout();*/
                     break;
                 }
             }

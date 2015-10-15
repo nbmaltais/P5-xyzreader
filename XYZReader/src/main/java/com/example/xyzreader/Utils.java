@@ -1,8 +1,13 @@
 package com.example.xyzreader;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -53,5 +58,49 @@ public class Utils {
         Point size = new Point();
         display.getSize(size);  // deprecated
         return size.y;
+    }
+
+    public static void animateBackgroundColor( final View view , int colorFrom, int colorTo, long duration)
+    {
+
+        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+        colorAnimation.setDuration(duration);
+        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                view.setBackgroundColor((Integer)animator.getAnimatedValue());
+            }
+
+        });
+        colorAnimation.start();
+    }
+
+    public static void animateBackgroundTintList( final View view , int colorFrom, int colorTo, long duration)
+    {
+
+        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+        colorAnimation.setDuration(duration);
+        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    view.setBackgroundTintList(ColorStateList.valueOf((Integer) animator.getAnimatedValue()));
+                }
+            }
+
+        });
+        colorAnimation.start();
+    }
+
+    public static int getBackgroundColor(View view, int defaultColor) {
+        Drawable background =  view.getBackground();
+        if( background instanceof ColorDrawable)
+        {
+            return ((ColorDrawable)background).getColor();
+        }
+        else
+            return defaultColor;
     }
 }

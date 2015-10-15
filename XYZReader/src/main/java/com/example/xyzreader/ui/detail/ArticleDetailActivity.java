@@ -23,6 +23,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Transition;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -192,6 +193,17 @@ public class ArticleDetailActivity extends AppCompatActivity
 
         Log.d(TAG, "onCreate exit");
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                supportFinishAfterTransition();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void resumeContentTransitionAnimation( long id)

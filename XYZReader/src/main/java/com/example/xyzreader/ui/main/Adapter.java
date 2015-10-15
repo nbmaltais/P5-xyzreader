@@ -95,8 +95,8 @@ class Adapter extends RecyclerView.Adapter<ViewHolder> {
 
         // TODO: add place holder
         Picasso.with(ctx).load(imageUrl)
-                .fit()
-                .centerCrop()
+                //.fit()
+                //.centerCrop()
                 .into(holder.thumbnailView);
     }
 

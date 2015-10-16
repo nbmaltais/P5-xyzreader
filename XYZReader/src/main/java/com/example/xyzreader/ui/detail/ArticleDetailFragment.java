@@ -200,11 +200,15 @@ public class ArticleDetailFragment extends Fragment {
 
 
     private void adjustToolbarPadding(Toolbar toolbar) {
-        int padding = Utils.getStatusBarHeight(getActivity());
-        ViewGroup.LayoutParams layoutParams = toolbar.getLayoutParams();
-        layoutParams.height += padding;
-        toolbar.setLayoutParams(layoutParams);
-        toolbar.setPadding(0, padding, 0, 0);
+        // This is not necessary when the status bar is not translucent
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            int padding = Utils.getStatusBarHeight(getActivity());
+            ViewGroup.LayoutParams layoutParams = toolbar.getLayoutParams();
+            layoutParams.height += padding;
+            toolbar.setLayoutParams(layoutParams);
+            toolbar.setPadding(0, padding, 0, 0);
+        }
     }
 
 

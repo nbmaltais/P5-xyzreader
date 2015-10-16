@@ -16,19 +16,7 @@
     android:maxWidth="@dimen/detail_card_max_width"
     android:orientation="vertical">
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/share_fab"
-        android:layout_width="@dimen/fab_size"
-        android:layout_height="@dimen/fab_size"
-        android:layout_above="@+id/article_body"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginRight="@dimen/fab_margin"
-        android:layout_marginBottom="@dimen/fab_bottom_margin"
-        android:contentDescription="@string/action_share"
-        android:src="@drawable/ic_share"
-        />
+
 
     <LinearLayout
         android:id="@+id/meta_bar"
@@ -86,6 +74,20 @@
         android:textSize="@dimen/detail_body_text_size"
         tools:text="Qwer tyu ioo sff lsdsd sfsdfo. afaja asdkajsd asdjas kakdja daskjd alsdjkaj. akjdakdjkada kasdjaksd kaj"/>
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/share_fab"
+        android:layout_width="@dimen/fab_size"
+        android:layout_height="@dimen/fab_size"
+        android:layout_above="@+id/article_body"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginRight="@dimen/fab_margin"
+        android:layout_marginBottom="@dimen/fab_bottom_margin"
+        android:contentDescription="@string/action_share"
+        android:src="@drawable/ic_share"
+        app:borderWidth="0dp"
+        />
 </com.example.xyzreader.widget.MaxWidthRelativeLayout>
 
 

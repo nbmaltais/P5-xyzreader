@@ -2,6 +2,7 @@ package com.example.xyzreader;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -9,6 +10,7 @@ import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Display;
@@ -76,6 +78,7 @@ public class Utils {
         colorAnimation.start();
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static void animateBackgroundTintList( final View view , int colorFrom, int colorTo, long duration)
     {
 
@@ -83,12 +86,31 @@ public class Utils {
         colorAnimation.setDuration(duration);
         colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
+
             @Override
             public void onAnimationUpdate(ValueAnimator animator) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    view.setBackgroundTintList(ColorStateList.valueOf((Integer) animator.getAnimatedValue()));
-                }
+                view.setBackgroundTintList(ColorStateList.valueOf((Integer) animator.getAnimatedValue()));
+
             }
+
+        });
+        colorAnimation.start();
+    }
+
+    public static void animateBackgroundTintList( final FloatingActionButton view , int colorFrom, int colorTo, long duration)
+    {
+
+        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+        colorAnimation.setDuration(duration);
+
+        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                view.setBackgroundTintList(ColorStateList.valueOf((Integer) animator.getAnimatedValue()));
+            }
+
+
 
         });
         colorAnimation.start();

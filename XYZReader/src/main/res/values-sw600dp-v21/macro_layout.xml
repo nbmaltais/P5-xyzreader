@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- FAB padding is different in lollipop -->
+    <dimen name="fab_margin">24dp</dimen>
+    <dimen name="fab_bottom_margin">20dp</dimen> <!-- = detail_metabar_vert_padding - fab_size/2 -->
+</resources>

@@ -16,7 +16,7 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="@dimen/toolbar_extra_size"
             app:layout_scrollFlags="scroll"/>
         
         <android.support.v7.widget.Toolbar

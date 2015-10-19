@@ -15,6 +15,8 @@
     <dimen name="detail_body_bottom_margin">88dp</dimen>
     <dimen name="card_item_margin">4dp</dimen>
     <dimen name="fab_margin">8dp</dimen>
-    <dimen name="fab_bottom_margin">-12dp</dimen> <!-- = detail_metabar_vert_padding - fab_size/2 -->
+    <dimen name="fab_bottom_margin">-12dp</dimen>
+    <dimen name="toolbar_extra_size">0dp</dimen>
+    <!-- = detail_metabar_vert_padding - fab_size/2 -->
 
 </resources>

@@ -71,7 +71,7 @@ public class ArticleListActivity extends AppCompatActivity implements
             Log.d(TAG,"**** onMapSharedElements");
             if(mIsReentering)
             {
-                Log.d(TAG,"**** onMapSharedElements reentering");
+                Log.d(TAG,"**** onMapSharedElements reentering==true");
                 mIsReentering=false;
                 // We are reentering from the detail activity. Check the parameter returned to decide if we
                 // need to remap the shared elements.
@@ -89,9 +89,10 @@ public class ArticleListActivity extends AppCompatActivity implements
             }
             else
             {
-                String name = getString(R.string.transitionName_scrollView);
+                Log.d(TAG,"**** onMapSharedElements reentering==false");
+                /*String name = getString(R.string.transitionName_scrollView);
                 names.add(name);
-                sharedElements.put(name,null);
+                sharedElements.put(name,null);*/
 
             }
         }
